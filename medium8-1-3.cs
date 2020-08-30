@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Bag
@@ -8,11 +7,9 @@ namespace Bag
     public class Bag
     {
         private readonly int _maxWeigth;
-        private readonly List<Item> _items = new List<Item>();
+        private readonly List<IItem> _items = new List<IItem>();
 
-        public ReadOnlyCollection<ReadOnlyItem> Items => _items.ConvertAll(Item.ToReadOnlyItem).AsReadOnly();
-
-        public Bag(int maxWeigth, IEnumerable<Item> items)
+        public Bag(int maxWeigth, IEnumerable<IItem> items)
         {
             _maxWeigth = maxWeigth;
 
@@ -20,6 +17,13 @@ namespace Bag
             {
                 _items.Add(new Item(item.Name, item.Count));
             }
+        }
+
+        public IEnumerable<IItem> Items => _items;
+
+        private int GetCurrentWeigth()
+        {
+            return Items.Sum(item => item.Count);
         }
 
         public void AddItem(string name, int count)
@@ -32,48 +36,25 @@ namespace Bag
             if (GetCurrentWeigth() + count > _maxWeigth)
                 throw new InvalidOperationException();
 
-            targetItem.Count = count;
-        }
-
-        private int GetCurrentWeigth()
-        {
-            return _items.Sum(item => item.Count);
+            ((Item) targetItem).Count += count;
         }
     }
 
-    public class Item
+    public interface IItem
     {
-        private int _count;
+        string Name { get; }
+        int Count { get; }
+    }
 
-        public int Count
-        {
-            get => _count;
-            set => _count += value;
-        }
-
+    public class Item: IItem
+    {
         public string Name { get; }
+        public int Count { get; set; }
 
         public Item(string name, int count)
         {
             Name = name;
             Count = count;
-        }
-
-        public static ReadOnlyItem ToReadOnlyItem(Item item)
-        {
-            return new ReadOnlyItem(item);
-        }
-    }
-
-    public class ReadOnlyItem
-    {
-        private readonly Item _item;
-        public int Count => _item.Count;
-        public string Name => _item.Name;
-
-        public ReadOnlyItem(Item item)
-        {
-            _item = item;
         }
     }
 }
