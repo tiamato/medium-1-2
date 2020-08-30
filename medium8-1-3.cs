@@ -21,11 +21,6 @@ namespace Bag
 
         public IEnumerable<IItem> Items => _items;
 
-        private int GetCurrentWeigth()
-        {
-            return Items.Sum(item => item.Count);
-        }
-
         public void AddItem(string name, int count)
         {
             var targetItem = _items.FirstOrDefault(item => item.Name == name);
@@ -37,6 +32,11 @@ namespace Bag
                 throw new InvalidOperationException();
 
             ((Item) targetItem).Count += count;
+        }
+
+        private int GetCurrentWeigth()
+        {
+            return Items.Sum(item => item.Count);
         }
     }
 
