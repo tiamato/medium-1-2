@@ -7,7 +7,7 @@ namespace Bag
     public class Bag
     {
         private readonly int _maxWeigth;
-        private readonly List<IItem> _items = new List<IItem>();
+        private readonly List<Item> _items = new List<Item>();
 
         public Bag(int maxWeigth, IEnumerable<IItem> items)
         {
@@ -31,7 +31,7 @@ namespace Bag
             if (GetCurrentWeigth() + count > _maxWeigth)
                 throw new InvalidOperationException();
 
-            ((Item) targetItem).Count += count;
+            targetItem.Count += count;
         }
 
         private int GetCurrentWeigth()
